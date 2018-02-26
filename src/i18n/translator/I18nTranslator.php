@@ -6,7 +6,7 @@
  * @license https://github.com/soloproyectos-php/sys/blob/master/LICENSE The MIT License (MIT)
  * @link    https://github.com/soloproyectos-php/sys
  */
-namespace soloproyectos\i18n;
+namespace soloproyectos\i18n\translator;
 use soloproyectos\i18n\exception\I18nException;
 use soloproyectos\sys\file\SysFile;
 
@@ -25,14 +25,14 @@ class I18nTranslator
      * 
      * @var string
      */
-    public $defaultLang;
+    private $_defaultLang;
     
     /**
-     * Current language.
+     * Language in use.
      * 
      * @var string
      */
-    public $lang;
+    public $_lang;
     
     /**
      * List of dictionaries.
@@ -47,7 +47,7 @@ class I18nTranslator
      * Loads a list of dictionaries from a directory.
      * 
      * @param string $dir  Directory path
-     * @param string $lang Current language
+     * @param string $lang Language in use
      * 
      * @return void
      */
@@ -59,12 +59,36 @@ class I18nTranslator
         foreach ($paths as $path) {
             $fullPath = SysFile::concat($dir, $path);
             if (is_file($fullPath)) {
-                $this->_loadDictionary($fullPath);
+                $language = pathinfo($fullPath, PATHINFO_FILENAME);
+                $contents = file_get_contents($fullPath);
+                $dictionary = json_decode($contents);
+                
+                if ($dictionary === null) {
+                    throw new I18nException("Invalid JSON format: $path");
+                }
+                
+                $this->_dicts[$language] = $dictionary;
             }
         }
         
-        $this->defaultLang = $lang;
-        $this->lang = $lang;
+        $this->_defaultLang = $lang;
+        $this->_lang = $lang;
+    }
+    
+    /**
+     * Uses a specific language.
+     * 
+     * @param string $lang Language
+     * 
+     * @return void
+     */
+    public function useLang($lang)
+    {
+        if (!array_key_exists($lang, $this->_dicts)) {
+            throw new I18nException("Language not found: $lang");
+        }
+        
+        $this->_lang = $lang;
     }
     
     /**
@@ -77,12 +101,11 @@ class I18nTranslator
     public function get($key)
     {
         $ret = $key;
-        $lang = $this->lang;
         
-        if ($this->_hasTranslation($key, $lang)) {
-            $ret = $this->_getTranslation($key, $lang);
-        } elseif ($this->_hasTranslation($key, $this->defaultLang)) {
-            $ret = $this->_getTranslation($key, $this->defaultLang);
+        if ($this->_hasTranslation($key, $this->_lang)) {
+            $ret = $this->_getTranslation($key, $this->_lang);
+        } elseif ($this->_hasTranslation($key, $this->_defaultLang)) {
+            $ret = $this->_getTranslation($key, $this->_defaultLang);
         }
         
         return $ret;
@@ -97,6 +120,7 @@ class I18nTranslator
     private function _getTranslation($key, $lang)
     {
         $dict = $this->_dicts[$lang];
+        
         return $dict->{$key};
     }
     
@@ -109,29 +133,7 @@ class I18nTranslator
     private function _hasTranslation($key, $lang)
     {
         $dict = $this->_dicts[$lang];
+        
         return property_exists($dict, $key);
-    }
-    
-    /**
-     * Loads a dictionary from a JSON file.
-     * 
-     * @param string $path JSON file
-     * 
-     * @return void
-     */
-    private function _loadDictionary($path)
-    {
-        if (!is_file($path)) {
-            throw new I18nException("File not found");
-        }
-        
-        $lang = pathinfo($path, PATHINFO_FILENAME);
-        $contents = file_get_contents($path);
-        $dictionary = json_decode($contents);
-        if ($dictionary === null) {
-            throw new I18nException("Invalid JSON format");
-        }
-        
-        $this->_dicts[$lang] = $dictionary;
     }
 }

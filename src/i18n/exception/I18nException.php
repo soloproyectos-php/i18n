@@ -6,7 +6,7 @@
  * @license https://github.com/soloproyectos-php/sys/blob/master/LICENSE The MIT License (MIT)
  * @link    https://github.com/soloproyectos-php/sys
  */
-namespace soloproyectos\sys\exception;
+namespace soloproyectos\i18n\exception;
 use \Exception;
 
 /**
@@ -17,7 +17,7 @@ use \Exception;
  * @license https://github.com/soloproyectos-php/sys/blob/master/LICENSE The MIT License (MIT)
  * @link    https://github.com/soloproyectos-php/sys
  */
-class SysException extends Exception
+class I18nException extends Exception
 {
 
 }

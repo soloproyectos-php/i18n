@@ -92,6 +92,16 @@ class I18nTranslator
     }
     
     /**
+     * Gets the list of languages.
+     * 
+     * @return string[]
+     */
+    public function getLangs()
+    {
+        return array_keys($this->_dicts);
+    }
+    
+    /**
      * Gets a translation.
      * 
      * @param string|string[] $key    Translation key

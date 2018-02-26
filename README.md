@@ -65,7 +65,7 @@ Translations can be categorized:
 
 ```php
 // prints "This is the first key"
-echo $t->get(["category1", "key1"]);
+echo $t->get("category1.key1");
 
 // prints "This is the second key"
 echo $t->get(["key2"]);

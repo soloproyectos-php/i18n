@@ -104,14 +104,14 @@ class I18nTranslator
     /**
      * Gets a translation.
      * 
-     * @param string|string[] $key    Translation key
-     * @param string[]        $values Replacement values (not required)
+     * @param string   $key    Translation key
+     * @param string[] $values Replacement values (not required)
      * 
      * @return string
      */
     public function get($key, $values = [])
     {
-        $keys = is_array($key) ? $key : [$key];
+        $keys = array_filter(explode(".", $key));
         
         $ret = $this->_searchTranslation($keys, $this->_lang);
         if ($ret === null) {
@@ -136,7 +136,7 @@ class I18nTranslator
             );
         }
         
-        return $ret === null ? array_pop($path) : $ret;
+        return $ret === null ? $key : $ret;
     }
     
     /**

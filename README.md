@@ -39,7 +39,7 @@ $t->useLang("en");
 echo $t->get("hello");
 ```
 
-Translation accepts parameters:
+Translations accept parameters:
 
 ```json
 {

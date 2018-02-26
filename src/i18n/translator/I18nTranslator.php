@@ -32,7 +32,7 @@ class I18nTranslator
      * 
      * @var string
      */
-    public $_lang;
+    private $_lang;
     
     /**
      * List of dictionaries.
@@ -132,12 +132,12 @@ class I18nTranslator
     /**
      * Searches a translation by a path.
      * 
-     * @param string[] $path List of keys
+     * @param string[] $keys List of keys
      * @param string   $lang Language
      * 
      * @return string
      */
-    public function _searchTranslation($keys, $lang)
+    private function _searchTranslation($keys, $lang)
     {
         $ret = $this->_dicts[$lang];
         

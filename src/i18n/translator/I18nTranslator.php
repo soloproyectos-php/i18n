@@ -94,23 +94,22 @@ class I18nTranslator
     /**
      * Gets a translation.
      * 
-     * @param string   $key    Translation key
-     * @param string[] $values Replacement values (not required)
+     * @param string|string[] $key    Translation key
+     * @param string[]        $values Replacement values (not required)
      * 
      * @return string
      */
     public function get($key, $values = [])
     {
-        $ret = $key;
+        $keys = is_array($key) ? $key : [$key];
         
-        if ($this->_hasTranslation($key, $this->_lang)) {
-            $ret = $this->_getTranslation($key, $this->_lang);
-        } elseif ($this->_hasTranslation($key, $this->_defaultLang)) {
-            $ret = $this->_getTranslation($key, $this->_defaultLang);
+        $ret = $this->_searchTranslation($keys, $this->_lang);
+        if ($ret === null) {
+            $ret = $this->_searchTranslation($keys, $this->_defaultLang);
         }
         
         // replaces translation parameters
-        if (count($values) > 0) {
+        if ($ret !== null && count($values) > 0) {
             $ret = preg_replace_callback(
                 '/{{(\w+)}}/',
                 function ($matches) use ($values) {
@@ -127,32 +126,29 @@ class I18nTranslator
             );
         }
         
-        return $ret;
+        return $ret === null ? array_pop($path) : $ret;
     }
     
     /**
-     * Gets a translation for a specific language.
+     * Searches a translation by a path.
      * 
-     * @param string $key  Translation key
-     * @param string $lang Language
-     */
-    private function _getTranslation($key, $lang)
-    {
-        $dict = $this->_dicts[$lang];
-        
-        return $dict->{$key};
-    }
-    
-    /**
-     * Checks if a language contains a specific translation.
+     * @param string[] $path List of keys
+     * @param string   $lang Language
      * 
-     * @param string $key  Translation key
-     * @param string $lang Language
+     * @return string
      */
-    private function _hasTranslation($key, $lang)
+    public function _searchTranslation($keys, $lang)
     {
-        $dict = $this->_dicts[$lang];
+        $ret = $this->_dicts[$lang];
         
-        return property_exists($dict, $key);
+        foreach ($keys as $key) {
+            if (!property_exists($ret, $key)) {
+                return null;
+            }
+            
+            $ret = $ret->{$key};
+        }
+        
+        return is_string($ret) ? $ret : null;
     }
 }

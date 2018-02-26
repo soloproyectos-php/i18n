@@ -18,9 +18,9 @@ Dictionaries are JSON files and must be located under the same directory. For ex
 ./i18n/<language>.json
 ```
 
-## Example
+## Examples
 
-Loads dictionaries and use a specific language
+Loads dictionaries from a directory and use a specific language:
 ```php
 header("Content-Type: text/plain; charset=utf-8");
 require_once "../vendor/autoload.php";
@@ -34,4 +34,21 @@ $t->loadDictionaries("./i18n", "es");
 
 // use the 'en' language
 $t->useLang("en");
+
+// prints a translation
+echo $t->get("hello");
+```
+
+Translation accepts parameters. For example:
+
+```json
+{
+  "hello": "Hello, {{name}}!",
+  "bye": "Bye, bye!"
+}
+```
+
+```php
+// prints "Hello, John!"
+echo $t->get("hello", ["name" => "John"]);
 ```

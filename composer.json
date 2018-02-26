@@ -1,0 +1,21 @@
+{
+    "name": "soloproyectos-php/i18n",
+    "description": "A simple internationalization library. This library is part of the SoloProyectos PHP API.",
+    "type": "php-library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Gonzalo Chumillas",
+            "email": "gchumillas@email.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.0",
+        "soloproyectos-php/sys-file": "~1.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "soloproyectos\\": "src/"
+        }
+    }
+}

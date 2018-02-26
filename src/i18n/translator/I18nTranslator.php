@@ -94,11 +94,12 @@ class I18nTranslator
     /**
      * Gets a translation.
      * 
-     * @param string $key Translation key
+     * @param string   $key    Translation key
+     * @param string[] $values Replacement values (not required)
      * 
      * @return string
      */
-    public function get($key)
+    public function get($key, $values = [])
     {
         $ret = $key;
         
@@ -106,6 +107,24 @@ class I18nTranslator
             $ret = $this->_getTranslation($key, $this->_lang);
         } elseif ($this->_hasTranslation($key, $this->_defaultLang)) {
             $ret = $this->_getTranslation($key, $this->_defaultLang);
+        }
+        
+        // replaces translation parameters
+        if (count($values) > 0) {
+            $ret = preg_replace_callback(
+                '/{{(\w+)}}/',
+                function ($matches) use ($values) {
+                    $str = $matches[0];
+                    $key = trim($matches[1]);
+                    
+                    if (array_key_exists($key, $values)) {
+                        $str = $values[$key];
+                    }
+                    
+                    return $str;
+                },
+                $ret
+            );
         }
         
         return $ret;

@@ -39,7 +39,7 @@ $t->useLang("en");
 echo $t->get("hello");
 ```
 
-Translation accepts parameters. For example:
+Translation accepts parameters:
 
 ```json
 {
@@ -51,4 +51,22 @@ Translation accepts parameters. For example:
 ```php
 // prints "Hello, John!"
 echo $t->get("hello", ["name" => "John"]);
+```
+
+Translations can be categorized:
+```json
+{
+    "category1": {
+        "key1": "This is the first key"
+    },
+    "key2": "This is the second key"
+}
+```
+
+```php
+// prints "This is the first key"
+echo $t->get(["category1", "key1"]);
+
+// prints "This is the second key"
+echo $t->get(["key2"]);
 ```
